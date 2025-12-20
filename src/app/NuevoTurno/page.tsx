@@ -17,34 +17,13 @@ import {
 } from "react-icons/fa";
 import { IoIosArrowBack, IoMdPin, IoMdSearch } from "react-icons/io";
 import { specialtiesIcons } from "../data/specialtiesIcons";
-import { MdFamilyRestroom, MdOutlineMedicalInformation } from "react-icons/md";
-import { ImManWoman } from "react-icons/im";
-import { LiaLaptopMedicalSolid } from "react-icons/lia";
-import { TbBuildingHospital } from "react-icons/tb";
-import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2";
 import { mockDoctors } from "../data/doctors";
 import { TiTick } from "react-icons/ti";
 import { GoStarFill } from "react-icons/go";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { FcCancel } from "react-icons/fc";
-
-export interface Doctor {
-  id: number;
-  name: string;
-  specialty: string;
-  location: string;
-  rating: number;
-  imageUrl: string;
-}
-
-export interface Turno {
-  id: string;
-  paciente_dni: string;
-  paciente_name: string;
-  especialista: Doctor;
-  fecha: Date;
-  hora: string;
-}
+import { Doctor, Turno } from "../types";
+import { filtrosDisponibles } from "../data/filters";
+import { exampleUser } from "../data/actualUser";
 
 const page = () => {
   const [tab, setTab] = useState("eligiendoEspecialidad");
@@ -53,56 +32,21 @@ const page = () => {
   const [especialidadElegida, setEspecialidadElegida] = useState<any>(null);
   const [especialistaElegido, setEspecialistaElegido] = useState<Doctor | null>(null);
 
-  const [fechaElegida, setFechaElegida] = useState<Date | null>(null);
+  const [fechaElegida, setFechaElegida] = useState<string | null>(null);
   const [horarioElegido, setHorarioElegido] = useState<string | null>(null);
 
-  const [mesActual, setMesActual] = useState(new Date());
+  const [fechaCalendario, setfechaCalendario] = useState(() => {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const yyyy = today.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  });
 
   const [confirmandoTurno, setConfirmandoTurno] = useState(false);
   const [confirmandoCancelar, setConfirmandoCancelar] = useState(false);
 
   const [turno, setTurno] = useState<Turno | null>(null);
-
-  const filtrosDisponibles = [
-    {
-      name: "Mas Filtros",
-      icon: <HiOutlineAdjustmentsHorizontal size={16} className='text-zinc-700' />,
-      id: "mas_filtros",
-    },
-    {
-      name: "Valorado por pacientes de mi edad",
-      icon: <MdFamilyRestroom size={16} className='text-zinc-700' />,
-      id: "pacientes_de_mi_edad",
-    },
-    {
-      name: "Valorado por pacientes de mi genero",
-      icon: <ImManWoman size={16} className='text-zinc-700' />,
-      id: "pacientes_de_mi_genero",
-    },
-    {
-      name: "Atiende Fisicamente",
-      icon: <TbBuildingHospital size={16} className='text-zinc-700' />,
-      id: "atiende_fisicamente",
-    },
-    {
-      name: "Atiende Virtual",
-      icon: <LiaLaptopMedicalSolid size={16} className='text-zinc-700' />,
-      id: "atiende_virtual",
-    },
-    {
-      name: "Trabaja con Obras Sociales",
-      icon: <MdOutlineMedicalInformation size={16} className='text-zinc-700' />,
-      id: "trabaja_con_obras_sociales",
-    },
-  ];
-
-  const exampleUser = {
-    name: "María Belen Perez",
-    dni: "40.212.353",
-    fechaNacimiento: "30/07/1998",
-    obraSocial: "Osde",
-    planObraSocial: "310",
-  };
 
   const diasSemana = ["L", "M", "M", "J", "V", "S", "D"];
   const meses = [
@@ -123,26 +67,38 @@ const page = () => {
   const horariosMañana = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"];
   const horariosTarde = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30"];
 
+  const parseDate = (fecha: string): Date => {
+    const [day, month, year] = fecha.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const formatDate = (date: Date): string => {
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
   // Funciones para el calendario
-  const obtenerDiasDelMes = (fecha: Date) => {
-    const año = fecha.getFullYear();
-    const mes = fecha.getMonth();
+  const obtenerDiasDelMes = (fecha: string) => {
+    const baseDate = parseDate(fecha);
+    const año = baseDate.getFullYear();
+    const mes = baseDate.getMonth();
 
     const primerDia = new Date(año, mes, 1);
     const ultimoDia = new Date(año, mes + 1, 0);
 
-    const diasMes = [];
+    const diasMes: (string | null)[] = [];
     const primerDiaSemana = primerDia.getDay();
     const ajuste = primerDiaSemana === 0 ? 6 : primerDiaSemana - 1;
 
-    // Días vacíos al inicio
     for (let i = 0; i < ajuste; i++) {
       diasMes.push(null);
     }
 
-    // Días del mes
     for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
-      diasMes.push(new Date(año, mes, dia));
+      diasMes.push(formatDate(new Date(año, mes, dia)));
     }
 
     return diasMes;
@@ -151,39 +107,43 @@ const page = () => {
   const cambiarMes = (direccion: number) => {
     const hoy = new Date();
     const limiteMaximo = new Date(hoy.getFullYear(), hoy.getMonth() + 6, 1);
-    const nuevoMes = new Date(mesActual.getFullYear(), mesActual.getMonth() + direccion, 1);
 
-    // Verificar que no retroceda antes del mes actual
+    const fechaCalendarioDate = parseDate(fechaCalendario);
+    const nuevoMes = new Date(fechaCalendarioDate.getFullYear(), fechaCalendarioDate.getMonth() + direccion, 1);
+
     if (nuevoMes < new Date(hoy.getFullYear(), hoy.getMonth(), 1)) return;
-
-    // Verificar que no avance más de 6 meses
     if (nuevoMes >= limiteMaximo) return;
 
-    setMesActual(nuevoMes);
+    setfechaCalendario(formatDate(nuevoMes));
   };
 
-  const esFechaSeleccionada = (fecha: Date | null) => {
+  const esFechaSeleccionada = (fecha: string | null) => {
     if (!fecha || !fechaElegida) return false;
-    return fecha.toDateString() === fechaElegida.toDateString();
+    return fecha === fechaElegida;
   };
 
-  const esHoy = (fecha: Date | null) => {
+  const esHoy = (fecha: string | null) => {
     if (!fecha) return false;
-    const hoy = new Date();
-    return fecha.toDateString() === hoy.toDateString();
+    return fecha === formatDate(new Date());
   };
 
-  const esFechaPasada = (fecha: Date | null) => {
+  const esFechaPasada = (fecha: string | null) => {
     if (!fecha) return false;
+
+    const fechaDate = parseDate(fecha);
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    return fecha < hoy;
+
+    return fechaDate < hoy;
   };
 
-  const formatearFechaCompleta = (fecha: Date | null) => {
+  const formatearFechaCompleta = (fecha: string | null) => {
     if (!fecha) return "";
-    const dia = fecha.getDate();
-    const mes = meses[fecha.getMonth()];
+
+    const date = parseDate(fecha);
+    const dia = date.getDate();
+    const mes = meses[date.getMonth()];
+
     return `${dia} ${mes}`;
   };
 
@@ -233,7 +193,7 @@ const page = () => {
       paciente_dni: exampleUser.dni,
       paciente_name: exampleUser.name,
       especialista: especialistaElegido as Doctor,
-      fecha: fechaElegida as Date,
+      fecha: fechaElegida as string,
       hora: horarioElegido as string,
     };
 
@@ -260,15 +220,15 @@ const page = () => {
     }
   };
 
-  const diasDelMes = obtenerDiasDelMes(mesActual);
+  const diasDelMes = obtenerDiasDelMes(fechaCalendario);
 
   return (
-    <div className='w-full h-full flex flex-col gap-6 antialiased font-sans px-6 pt-6 bg-zinc-50/50 relative'>
+    <div className='w-full h-full flex flex-col gap-6 px-6 pt-6 bg-zinc-50/50 relative'>
       {/* Top Navbar Home */}
       <div className='w-full flex flex-row justify-between items-center'>
         {/* Back Button */}
         <Link href={"/MobileHome"} className='z-50 active:scale-90 active:text-zinc-500 text-zinc-800 transition-all'>
-          <button>
+          <button className="hover:scale-95 transition-all">
             <IoIosArrowBack size={28} className='text-zinc-800' />
           </button>
         </Link>
@@ -283,22 +243,22 @@ const page = () => {
         {/* Puntos azules */}
         <div className='flex flex-row gap-4'>
           <div
-            className={`h-3 ${step == 1 ? "bg-blue-500 w-10" : "w-3"} ${
+            className={`h-3 ${step == 1 ? "bg-[#2346D3] w-10" : "w-3"} ${
               step > 1 ? "bg-blue-300" : ""
             } rounded-full transition-all duration-500 ease-out`}
           ></div>
           <div
-            className={`h-3 ${step == 2 ? "bg-blue-500 w-10" : "w-3"} ${step > 2 ? "bg-blue-300" : ""} rounded-full ${
+            className={`h-3 ${step == 2 ? "bg-[#2346D3] w-10" : "w-3"} ${step > 2 ? "bg-blue-300" : ""} rounded-full ${
               step < 2 ? "bg-slate-300" : ""
             } transition-all duration-500 ease-out`}
           ></div>
           <div
-            className={`h-3 ${step == 3 ? "bg-blue-500 w-10" : "w-3"} ${step > 3 ? "bg-blue-300" : ""} rounded-full ${
+            className={`h-3 ${step == 3 ? "bg-[#2346D3] w-10" : "w-3"} ${step > 3 ? "bg-blue-300" : ""} rounded-full ${
               step < 3 ? "bg-slate-300" : ""
             } transition-all duration-500 ease-out`}
           ></div>
           <div
-            className={`h-3 ${step == 4 ? "bg-blue-500 w-10" : "w-3"} ${
+            className={`h-3 ${step == 4 ? "bg-[#2346D3] w-10" : "w-3"} ${
               step < 4 ? "bg-slate-300" : ""
             } rounded-full transition-all duration-500 ease-out`}
           ></div>
@@ -348,7 +308,7 @@ const page = () => {
                 onClick={() => setEspecialidadElegida(item)}
                 className={`w-full p-4 rounded-lg transition-all duration-200 ${
                   especialidadElegida != null && especialidadElegida.name == item.name
-                    ? "bg-blue-500/10 border-2 border-blue-500"
+                    ? "bg-[#2346D3]/10 border-2 border-[#2346D3]"
                     : "bg-zinc-100 border-0"
                 } flex flex-row items-center`}
               >
@@ -362,14 +322,14 @@ const page = () => {
                 <div
                   className={`h-6 w-6 rounded-full border-2 transition-all duration-200 ${
                     especialidadElegida != null && especialidadElegida.name == item.name
-                      ? "border-blue-500 shadow-sm"
+                      ? "border-[#2346D3] shadow-sm"
                       : "border-zinc-300"
                   } ml-auto mr-2 p-1`}
                 >
                   <div
                     className={`h-full w-full transition-all duration-200 ${
                       especialidadElegida != null && especialidadElegida.name == item.name
-                        ? "bg-blue-500"
+                        ? "bg-[#2346D3]"
                         : "bg-transparent"
                     } rounded-full`}
                   ></div>
@@ -390,7 +350,7 @@ const page = () => {
             <button
               onClick={() => transicionPaso1a2()}
               className={`rounded-md ${
-                especialidadElegida != null ? "bg-blue-500" : "bg-zinc-500"
+                especialidadElegida != null ? "bg-[#2346D3]" : "bg-zinc-500"
               } w-full h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-colors duration-200 active:scale-95`}
             >
               <p className='text-white font-medium text-lg tracking-wide'>Siguiente</p>
@@ -453,7 +413,7 @@ const page = () => {
                     onClick={() => setEspecialistaElegido(doctor)}
                     className={`w-full p-4 rounded-lg transition-all duration-200 ${
                       especialistaElegido != null && especialistaElegido.name == doctor.name
-                        ? "bg-blue-500/10 border-2 border-blue-500"
+                        ? "bg-[#2346D3]/10 border-2 border-[#2346D3]"
                         : "bg-zinc-100 border-0"
                     } flex flex-row items-center`}
                   >
@@ -477,14 +437,14 @@ const page = () => {
                     <div
                       className={`h-6 w-6 rounded-full border-2 transition-all duration-200 ${
                         especialistaElegido != null && especialistaElegido.name == doctor.name
-                          ? "border-blue-500 shadow-sm"
+                          ? "border-[#2346D3] shadow-sm"
                           : "border-zinc-300"
                       } ml-auto mr-2 p-1`}
                     >
                       <div
                         className={`h-full w-full transition-all duration-200 ${
                           especialistaElegido != null && especialistaElegido.name == doctor.name
-                            ? "bg-blue-500"
+                            ? "bg-[#2346D3]"
                             : "bg-transparent"
                         } rounded-full`}
                       ></div>
@@ -500,12 +460,13 @@ const page = () => {
             <button
               onClick={() => transicionPaso2a3()}
               className={`rounded-md ${
-                especialistaElegido != null ? "bg-blue-500" : "bg-zinc-500"
+                especialistaElegido != null ? "bg-[#2346D3]" : "bg-zinc-500"
               } w-full h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-all duration-200 active:scale-95`}
             >
               <p className='text-white font-medium text-lg tracking-wide'>Siguiente</p>
               <FaArrowRight size={16} className='text-white scale-90' />
             </button>
+            {/* Volver un paso atras Button */}
             <button
               onClick={() => {
                 setTab("eligiendoEspecialidad");
@@ -594,9 +555,14 @@ const page = () => {
                 <button onClick={() => cambiarMes(-1)} className='p-2 hover:bg-zinc-100 rounded-lg transition-colors'>
                   <IoChevronBack size={20} className='text-zinc-600' />
                 </button>
+
                 <h3 className='text-zinc-800 font-semibold'>
-                  {meses[mesActual.getMonth()]} {mesActual.getFullYear()}
+                  {(() => {
+                    const date = parseDate(fechaCalendario);
+                    return `${meses[date.getMonth()]} ${date.getFullYear()}`;
+                  })()}
                 </h3>
+
                 <button onClick={() => cambiarMes(1)} className='p-2 hover:bg-zinc-100 rounded-lg transition-colors'>
                   <IoChevronForward size={20} className='text-zinc-600' />
                 </button>
@@ -622,15 +588,15 @@ const page = () => {
                       !fecha
                         ? "invisible"
                         : esFechaSeleccionada(fecha)
-                        ? "bg-blue-500 text-white shadow-md scale-110"
+                        ? "bg-[#2346D3] text-white shadow-md scale-110"
                         : esHoy(fecha)
-                        ? "border-2 border-blue-500 text-blue-500 hover:bg-blue-50"
+                        ? "border-2 border-[#2346D3] text-[#2346D3] hover:bg-blue-50"
                         : esFechaPasada(fecha)
                         ? "text-zinc-300 cursor-not-allowed"
                         : "text-zinc-700 hover:bg-zinc-100 active:scale-95"
                     }`}
                   >
-                    {fecha?.getDate()}
+                    {fecha ? fecha.split("-")[0] : ""}
                   </button>
                 ))}
               </div>
@@ -657,7 +623,7 @@ const page = () => {
                     onClick={() => setHorarioElegido(horario)}
                     className={`py-3 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
                       horarioElegido === horario
-                        ? "bg-blue-500 border-blue-500 text-white shadow-md scale-105"
+                        ? "bg-[#2346D3] border-[#2346D3] text-white shadow-md scale-105"
                         : "bg-white border-zinc-200 text-zinc-700 hover:border-blue-300 active:scale-95"
                     }`}
                   >
@@ -680,7 +646,7 @@ const page = () => {
                     onClick={() => setHorarioElegido(horario)}
                     className={`py-3 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
                       horarioElegido === horario
-                        ? "bg-blue-500 border-blue-500 text-white shadow-md scale-105"
+                        ? "bg-[#2346D3] border-[#2346D3] text-white shadow-md scale-105"
                         : "bg-white border-zinc-200 text-zinc-700 hover:border-blue-300 active:scale-95"
                     }`}
                   >
@@ -707,7 +673,7 @@ const page = () => {
             <button
               onClick={() => transicionPaso3a4()}
               className={`rounded-md ${
-                fechaElegida && horarioElegido ? "bg-blue-500" : "bg-zinc-500"
+                fechaElegida && horarioElegido ? "bg-[#2346D3]" : "bg-zinc-500"
               } w-full h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-all duration-200 active:scale-95`}
             >
               <p className='text-white font-medium text-lg tracking-wide'>Siguiente</p>
@@ -738,11 +704,11 @@ const page = () => {
           {/* Especialista Seleccionado */}
           <div
             onClick={() => volverAtras("eligiendoEspecialista")}
-            className='w-full p-4 rounded-xl bg-white flex flex-row items-center justify-between border border-zinc-100 shadow-sm hover:shadow-none transition-all'
+            className='w-full p-4 rounded-xl bg-white flex flex-row items-center justify-between gap-4 border border-zinc-100 shadow-sm hover:shadow-none transition-all'
           >
             {/* Datos del especialista */}
             <div className='flex flex-col justify-center'>
-              <p className='text-blue-500 font-medium'>ESPECIALISTA</p>
+              <p className='text-[#2346D3] font-medium'>ESPECIALISTA</p>
               {/* Nombre del especialista */}
               <p className='text-xl text-zinc-800 font-semibold'>{especialistaElegido?.name}</p>
               {/* Especialidad del especialista */}
@@ -755,7 +721,7 @@ const page = () => {
             </div>
             {/* Foto del especialista */}
             <div className='h-full rounded-xl ml-auto'>
-              <img src={especialistaElegido?.imageUrl} alt='' className='h-full aspect-square rounded-xl' />
+              <img src={especialistaElegido?.imageUrl} alt='' className='h-28 aspect-square rounded-xl' />
             </div>
           </div>
 
@@ -766,7 +732,7 @@ const page = () => {
               <h2 className='text-lg font-bold text-zinc-800'>Cuándo</h2>
               <p
                 onClick={() => volverAtras("eligiendoFechaYHora")}
-                className='text-blue-500 font-medium active:text-blue-300 transition-colors'
+                className='text-[#2346D3] font-medium active:text-blue-300 transition-colors'
               >
                 Editar
               </p>
@@ -778,8 +744,8 @@ const page = () => {
               {/* Fecha */}
               <div className='w-full flex flex-row gap-4 items-center'>
                 {/* Icono de Fecha */}
-                <div className='bg-blue-500/20 rounded-full p-2'>
-                  <FaRegCalendar className='text-blue-500' size={20} />
+                <div className='bg-[#2346D3]/20 rounded-full p-2'>
+                  <FaRegCalendar className='text-[#2346D3]' size={20} />
                 </div>
                 {/* Datos de Fecha */}
                 <div className='flex flex-col gap-1'>
@@ -796,8 +762,8 @@ const page = () => {
               {/* Hora */}
               <div className='w-full flex flex-row gap-4 items-center'>
                 {/* Icono de Fecha */}
-                <div className='bg-blue-500/20 rounded-full p-2'>
-                  <FaClock className='text-blue-500' size={20} />
+                <div className='bg-[#2346D3]/20 rounded-full p-2'>
+                  <FaClock className='text-[#2346D3]' size={20} />
                 </div>
                 {/* Datos de Fecha */}
                 <div className='flex flex-col gap-1'>
@@ -866,7 +832,7 @@ const page = () => {
           {/* Confirmar Button */}
           <button
             onClick={() => setConfirmandoTurno(true)}
-            className={`rounded-md w-full mt-2 bg-blue-500 h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-all duration-200 active:scale-95`}
+            className={`rounded-md w-full mt-2 bg-[#2346D3] h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-all duration-200 active:scale-95`}
           >
             <p className='text-white font-semibold text-lg tracking-wide'>Confirmar Reserva</p>
             <FaCheck size={16} className='text-white scale-90' />
@@ -881,10 +847,11 @@ const page = () => {
         </div>
       )}
 
+      {/* Modal de Confirmar Reserva en curso */}
       {confirmandoTurno && (
         <div className='fixed z-[1000] left-0 top-0 h-screen w-screen backdrop-blur-md p-4 bg-white/20 flex justify-center items-center shadow-xl'>
-          <div className='bg-white rounded-lg shadow-lg px-4 py-8 flex flex-col items-center gap-4 border border-zinc-100'>
-            <FaCalendarCheck className="text-blue-500" size={70} />
+          <div className='bg-white rounded-lg shadow-lg px-4 py-8 flex flex-col items-center gap-4 border border-zinc-200'>
+            <FaCalendarCheck className='text-[#2346D3]' size={70} />
             <p className='text-center text-xl text-zinc-800 font-semibold'>¿Estas seguro de confirmar esta reserva?</p>
             <p className='text-center text-sm text-zinc-500'>
               Asegurate de poder asistir. Tu cuenta podria ser desactivada si no asistes a una reserva sin aviso.
@@ -892,7 +859,7 @@ const page = () => {
             <Link href={"/MobileHome"}>
               <button
                 onClick={confirmarReserva}
-                className='bg-blue-500 mt-1 px-6 gap-3 rounded-md flex justify-center items-center w-full h-14 shadow-lg transition-all duration-200 active:scale-95'
+                className='bg-[#2346D3] mt-1 px-6 gap-3 rounded-md flex justify-center items-center w-full h-14 shadow-lg transition-all duration-200 active:scale-95'
               >
                 <p className='text-white font-semibold text-lg tracking-wide'>Reservar Turno</p>
                 <FaCheck size={16} className='text-white scale-90' />
@@ -908,10 +875,11 @@ const page = () => {
         </div>
       )}
 
+      {/* Modal de Cancelar Reserva en curso */}
       {confirmandoCancelar && (
         <div className='fixed z-[1000] left-0 top-0 h-screen w-screen backdrop-blur-md p-4 bg-white/20 flex justify-center items-center shadow-xl'>
-          <div className='bg-white rounded-lg shadow-lg px-4 py-8 flex flex-col items-center gap-4 border border-zinc-100'>
-            <FaRegCalendarTimes className="text-red-500" size={70} />
+          <div className='bg-white rounded-lg shadow-lg px-4 py-8 flex flex-col items-center gap-4 border border-zinc-200'>
+            <FaRegCalendarTimes className='text-red-500' size={70} />
             <p className='text-center text-xl text-zinc-800 font-semibold'>
               ¿Estas seguro de cancelar la reserva en curso?
             </p>
@@ -927,7 +895,7 @@ const page = () => {
             </Link>
             <button
               onClick={() => setConfirmandoCancelar(false)}
-              className='w-full flex justify-center items-center font-medium text-blue-500 hover:scale-95 hover:text-blue-300 transition-all'
+              className='w-full flex justify-center items-center font-medium text-[#2346D3] hover:scale-95 hover:text-blue-300 transition-all'
             >
               Volver
             </button>

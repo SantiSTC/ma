@@ -6,7 +6,7 @@ export const mockDoctors = [
     specialty: 'Cardiología',
     location: 'Madrid, España',
     rating: 4.8,
-    imageUrl: 'https://placehold.co/100x100/A855F7/FFFFFF?text=AP'
+    imageUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop'
   },
   {
     id: 2,
@@ -14,7 +14,7 @@ export const mockDoctors = [
     specialty: 'Neurología',
     location: 'Barcelona, España',
     rating: 4.5,
-    imageUrl: 'https://placehold.co/100x100/F97316/FFFFFF?text=JG'
+    imageUrl: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop'
   },
   {
     id: 3,
@@ -22,7 +22,7 @@ export const mockDoctors = [
     specialty: 'Pediatría',
     location: 'Valencia, España',
     rating: 4.9,
-    imageUrl: 'https://placehold.co/100x100/10B981/FFFFFF?text=SM'
+    imageUrl: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop'
   },
   {
     id: 4,
@@ -30,7 +30,7 @@ export const mockDoctors = [
     specialty: 'Oncología',
     location: 'Sevilla, España',
     rating: 5.0,
-    imageUrl: 'https://placehold.co/100x100/EF4444/FFFFFF?text=CS'
+    imageUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop'
   },
   {
     id: 5,
@@ -38,7 +38,7 @@ export const mockDoctors = [
     specialty: 'Dermatología',
     location: 'Bilbao, España',
     rating: 4.7,
-    imageUrl: 'https://placehold.co/100x100/3B82F6/FFFFFF?text=LG'
+    imageUrl: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=400&h=400&fit=crop'
   },
   {
     id: 6,
@@ -46,7 +46,7 @@ export const mockDoctors = [
     specialty: 'Cardiología',
     location: 'Zaragoza, España',
     rating: 4.6,
-    imageUrl: 'https://placehold.co/100x100/6366F1/FFFFFF?text=PF'
+    imageUrl: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop'
   },
   {
     id: 7,
@@ -54,6 +54,6 @@ export const mockDoctors = [
     specialty: 'Pediatría',
     location: 'Málaga, España',
     rating: 4.9,
-    imageUrl: 'https://placehold.co/100x100/F59E0B/FFFFFF?text=ER'
+    imageUrl: 'https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=400&h=400&fit=crop'
   },
 ];
