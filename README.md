@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MA — Médicos Argentina
 
-## Getting Started
+**MA (Médicos Argentina)** es un MVP de una aplicación de turnos médicos, desarrollada como proyecto personal y startup en etapa temprana.
 
-First, run the development server:
+El objetivo del proyecto es ofrecer una experiencia clara, rápida y mobile-first para la búsqueda de especialistas y la reserva de turnos médicos, apuntando tanto a **pacientes** como a **médicos** que trabajan de forma independiente.
+
+Actualmente se encuentra en desarrollo y funciona sin backend, utilizando datos mock para validar UI, flujos y experiencia de usuario.
+
+---
+
+## 🎯 Objetivo del proyecto
+
+- Mostrar el producto como MVP funcional
+- Validar experiencia de usuario y flujos clave
+- Servir como base para una futura app móvil nativa
+- Evolucionar hacia una solución real de turnos médicos en Argentina
+
+---
+
+## 🚧 Estado actual
+
+- 🧪 **MVP en desarrollo**
+- ✅ Funcional a nivel UI y navegación
+- ❌ Sin backend por el momento
+- 📦 Datos mockeados
+- 🔓 Repositorio público
+
+---
+
+## ⚙️ Funcionalidades implementadas
+
+Actualmente la aplicación permite:
+
+- 🆕 **Reservar turno** (flujo de selección)
+- 🔍 **Buscar especialistas**
+- 🧑‍⚕️ **Listado de médicos**
+- 🎛️ **Filtros avanzados**, incluyendo:
+  - Valorado por pacientes de mi edad
+  - Valorado por pacientes de mi género
+  - Atención virtual
+  - Atención física
+  - Trabaja con obras sociales
+  - Filtros tradicionales (especialidad, etc.)
+
+> Nota: la persistencia de datos y la lógica real de turnos se incorporarán en una etapa posterior con backend.
+
+---
+
+## 🔐 Autenticación
+
+- Existe autenticación a nivel UI
+- No hay persistencia real de usuarios todavía
+
+---
+
+## 🧱 Stack tecnológico
+
+- **Framework:** Next.js
+- **Lenguaje:** TypeScript
+- **Estilos:** Tailwind CSS
+- **Arquitectura:** Component-based
+- **Enfoque:** Mobile-first
+
+---
+
+## 📱 Enfoque Mobile
+
+El proyecto está diseñado **mobile-first** desde su concepción.
+
+Una vez finalizado este MVP web, el siguiente stage del proyecto es la **migración a una app móvil nativa utilizando React Native**, reutilizando lógica, flujos y criterios de UX validados en esta etapa.
+
+---
+
+## ▶️ Instalación y ejecución
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+También puede ejecutarse con:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run dev -- --turbo
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+La aplicación estará disponible en:
 
-## Learn More
+http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+## 📂 Datos mock
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+El proyecto utiliza datos mockeados para médicos y turnos con fines de desarrollo y validación visual.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Estos datos serán reemplazados por información real cuando se incorpore el backend.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗺️ Próximos pasos
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Integración de backend real  
+- Persistencia de usuarios y turnos  
+- Gestión de disponibilidad por médico  
+- Migración a React Native  
+- Publicación en stores (etapa futura)
+
+---
+
+## 👨‍💻 Autor
+
+**Santiago Iannello**  
+Creador del proyecto  
+Responsable de la idea, diseño, desarrollo y planificación del producto
+
