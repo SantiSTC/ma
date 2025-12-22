@@ -23,7 +23,7 @@ const page = () => {
       </div>
 
       {/* Search Bar | Barra de Busqueda */}
-      <div className='w-full bg-zinc-100 h-12 mt-2 rounded-md flex flex-row items-center px-4'>
+      <div className='w-full bg-zinc-100 h-12 mt-2 rounded-xl flex flex-row items-center px-4'>
         {/* Search/Lupa Icon */}
         <div className='mr-4'>
           <IoMdSearch size={24} className='text-zinc-700' />
@@ -58,8 +58,8 @@ const page = () => {
         {mockDoctors.map((doctor) => (
           <div key={doctor.id} className='w-full bg-white p-4 flex flex-row gap-2 shadow-sm rounded-xl'>
             {/* Imagen del especialista */}
-            <div className="w-[104px] h-full">
-              <img src={doctor.imageUrl} alt='' className='h-[72px] w-[72px] rounded-xl object-cover' />
+            <div className="w-26 h-full">
+              <img src={doctor.imageUrl} alt='' className='h-18 w-18 rounded-full object-cover' />
             </div>
             {/* Datos del especialista */}
             <div className='w-full flex flex-col'>

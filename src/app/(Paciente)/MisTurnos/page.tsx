@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowBack, IoMdAdd } from "react-icons/io";
 
-import { mockAppointments } from "@/app/data/appointments";
+import { mockAppointments } from "../data/appointments";
 
-import { formatAppointment } from "../utils/formatDate";
+import { formatAppointment } from "../../utils/formatDate";
 import Link from "next/link";
 import { specialtiesIcons } from "../data/specialtiesIcons";
 import { PiEmptyBold } from "react-icons/pi";
@@ -139,7 +139,7 @@ const Page = () => {
       </div>
 
       {/* Solicitar Nuevo Turno Button */}
-      <div className='w-full fixed bottom-0 left-0 flex justify-center px-6 pb-6 pt-12 bg-gradient-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
+      <div className='w-full fixed bottom-0 left-0 flex justify-center px-6 pb-6 pt-12 bg-linear-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
         <Link href={"/NuevoTurno"} className='w-full'>
           <button className='rounded-md bg-[#2346D3] w-full h-14 flex justify-center items-center gap-2 flex-row shadow-lg'>
             <IoMdAdd size={24} className='text-white' />

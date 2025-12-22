@@ -1,4 +1,6 @@
-export const exampleUser = {
+import { Paciente } from "@/app/types";
+
+export const exampleUser: Paciente = {
   name: "María Perez",
   dni: "40.212.353",
   fechaNacimiento: "30/07/1998",

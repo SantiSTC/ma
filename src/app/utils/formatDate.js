@@ -10,11 +10,24 @@ export function formatAppointment(dateStr, timeStr) {
     month: "long",
   });
 
-  const formattedTime = timeStr.slice(0, 5); 
+  const formattedTime = timeStr.slice(0, 5);
 
   return `${capitalizar(formattedDate)} - ${formattedTime} hs`;
 }
 
 function capitalizar(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function fechaATexto(fechaISO) {
+  const fecha = new Date(fechaISO + "T00:00:00");
+
+  return capitalizar(
+    fecha.toLocaleDateString("es-AR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  );
 }

@@ -7,6 +7,17 @@ export interface Doctor {
   imageUrl: string;
 }
 
+export interface Paciente {
+  name: string;
+  dni: string;
+  fechaNacimiento: string;
+  obraSocial: string;
+  planObraSocial: string;
+  email: string;
+  telefono: string;
+  img: string;
+}
+
 export interface Turno {
   id: string;
   paciente_dni: string;
@@ -14,4 +25,7 @@ export interface Turno {
   especialista: Doctor;
   fecha: string;
   hora: string;
+  estado: string;
+  modalidad: string;
+  resumen: string;
 }

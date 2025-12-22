@@ -7,9 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        "blue-ma": "#2346D3",
-      },
+      // colors: {
+      //   "blue-ma": "#2346D3",
+      // },
     },
   },
   plugins: [],

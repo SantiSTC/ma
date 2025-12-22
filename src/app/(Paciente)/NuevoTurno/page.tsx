@@ -21,9 +21,10 @@ import { mockDoctors } from "../data/doctors";
 import { TiTick } from "react-icons/ti";
 import { GoStarFill } from "react-icons/go";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { Doctor, Turno } from "../types";
+import { Doctor, Turno } from "../../types";
 import { filtrosDisponibles } from "../data/filters";
 import { exampleUser } from "../data/actualUser";
+import { acortarDireccion } from "../../utils/acortarDireccion";
 
 const page = () => {
   const [tab, setTab] = useState("eligiendoEspecialidad");
@@ -34,6 +35,8 @@ const page = () => {
 
   const [fechaElegida, setFechaElegida] = useState<string | null>(null);
   const [horarioElegido, setHorarioElegido] = useState<string | null>(null);
+
+  const [resumenDeLaConsulta, setResumenDeLaConsulta] = useState<string>("");
 
   const [fechaCalendario, setfechaCalendario] = useState(() => {
     const today = new Date();
@@ -195,6 +198,9 @@ const page = () => {
       especialista: especialistaElegido as Doctor,
       fecha: fechaElegida as string,
       hora: horarioElegido as string,
+      estado: "pendiente",
+      modalidad: "presencial",
+      resumen: resumenDeLaConsulta,
     };
 
     setTurno(objTurno);
@@ -222,13 +228,19 @@ const page = () => {
 
   const diasDelMes = obtenerDiasDelMes(fechaCalendario);
 
+  const confirmarTurno = () => {
+    if (resumenDeLaConsulta != "" && resumenDeLaConsulta.length >= 20) {
+      setConfirmandoTurno(true);
+    }
+  };
+
   return (
     <div className='w-full h-full flex flex-col gap-6 px-6 pt-6 bg-zinc-50/50 relative'>
       {/* Top Navbar Home */}
       <div className='w-full flex flex-row justify-between items-center'>
         {/* Back Button */}
         <Link href={"/MobileHome"} className='z-50 active:scale-90 active:text-zinc-500 text-zinc-800 transition-all'>
-          <button className="hover:scale-95 transition-all">
+          <button className='hover:scale-95 transition-all'>
             <IoIosArrowBack size={28} className='text-zinc-800' />
           </button>
         </Link>
@@ -346,7 +358,7 @@ const page = () => {
           </div>
 
           {/* Siguiente Button */}
-          <div className='w-full fixed bottom-0 left-0 flex justify-center px-6 pb-6 pt-12 bg-gradient-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
+          <div className='w-full fixed bottom-0 left-0 flex justify-center px-6 pb-6 pt-12 bg-linear-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
             <button
               onClick={() => transicionPaso1a2()}
               className={`rounded-md ${
@@ -418,19 +430,19 @@ const page = () => {
                     } flex flex-row items-center`}
                   >
                     {/* Foto del Especialista */}
-                    <div className={`bg-zinc-100 h-16 w-16 rounded-md`}>
-                      <img src={doctor.imageUrl} alt='' className='h-full w-full rounded-md' />
+                    <div className={`bg-zinc-100 h-full rounded-md`}>
+                      <img src={doctor.imageUrl} alt='' className='h-16 w-16 rounded-md' />
                     </div>
                     {/* Datos del Especialista */}
-                    <div className='ml-4 flex flex-col gap-[-4px]'>
+                    <div className='ml-4 flex flex-col gap-[-4px] flex-1'>
                       <p className='text-zinc-800 text-lg font-semibold'>{doctor.name}</p>
                       <div className='flex flex-row gap-1 items-center'>
-                        <GoStarFill size={12} className='text-zinc-500' />
+                        <GoStarFill size={12} className='text-yellow-500' />
                         <p className='text-zinc-600 font-semibold'>{doctor.rating}</p>
                       </div>
                       <div className='flex flex-row gap-1 items-center'>
                         <IoMdPin size={14} className='text-zinc-500' />
-                        <p className='text-zinc-600 font-medium'>{doctor.location}</p>
+                        <p className='text-zinc-600 font-medium text-sm'>{acortarDireccion(doctor.location)}</p>
                       </div>
                     </div>
                     {/* Selector */}
@@ -455,7 +467,7 @@ const page = () => {
           </div>
 
           {/* Botones Flotantes */}
-          <div className='w-full fixed bottom-0 left-0 flex justify-center flex-row-reverse gap-2 px-6 pb-6 pt-12 bg-gradient-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
+          <div className='w-full fixed bottom-0 left-0 flex justify-center flex-row-reverse gap-2 px-6 pb-6 pt-12 bg-linear-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
             {/* Siguiente Button */}
             <button
               onClick={() => transicionPaso2a3()}
@@ -668,7 +680,7 @@ const page = () => {
           </div>
 
           {/* Botones Flotantes */}
-          <div className='w-full fixed bottom-0 left-0 flex justify-center flex-row-reverse gap-2 px-6 pb-6 pt-12 bg-gradient-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
+          <div className='w-full fixed bottom-0 left-0 flex justify-center flex-row-reverse gap-2 px-6 pb-6 pt-12 bg-linear-to-b from-zinc-100/0 via-zinc-100/80 to-zinc-100/95'>
             {/* Siguiente Button */}
             <button
               onClick={() => transicionPaso3a4()}
@@ -726,7 +738,7 @@ const page = () => {
           </div>
 
           {/* Dia y Hora Seleccionado */}
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-2 mt-1'>
             {/* Title & Edit Button */}
             <div className='w-full flex flex-row justify-between items-center'>
               <h2 className='text-lg font-bold text-zinc-800'>Cuándo</h2>
@@ -771,6 +783,36 @@ const page = () => {
                   <p className='text-lg text-zinc-800 leading-tight font-bold'>{horarioElegido}</p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Resumen de consulta */}
+          <div className='flex flex-col gap-2 mt-1'>
+            {/* Title */}
+            <div className='w-full flex flex-row justify-between items-center'>
+              <h2 className='text-lg font-bold text-zinc-800'>Resumen de la consulta</h2>
+            </div>
+
+            {/* Input wrapper */}
+            <div className='relative'>
+              <textarea
+                id='resumenDeLaConsulta'
+                minLength={20}
+                maxLength={240}
+                placeholder='Explicá brevemente el motivo por el que solicitás el turno.'
+                value={resumenDeLaConsulta}
+                onChange={(e) => setResumenDeLaConsulta(e.target.value)}
+                className='w-full rounded-xl p-4 min-h-40 bg-white border border-zinc-100 shadow-sm text-zinc-800 placeholder:text-zinc-400 pr-16'
+              />
+
+              {/* Contador */}
+              <span
+                className={`absolute bottom-3 right-3 text-xs transition-colors ${
+                  resumenDeLaConsulta.length < 20 ? "text-red-500" : "text-zinc-500"
+                }`}
+              >
+                {resumenDeLaConsulta.length}/240
+              </span>
             </div>
           </div>
 
@@ -831,8 +873,10 @@ const page = () => {
 
           {/* Confirmar Button */}
           <button
-            onClick={() => setConfirmandoTurno(true)}
-            className={`rounded-md w-full mt-2 bg-[#2346D3] h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-all duration-200 active:scale-95`}
+            onClick={() => confirmarTurno()}
+            className={`rounded-md w-full mt-2 ${
+              resumenDeLaConsulta.length >= 20 ? "bg-[#2346D3] active:scale-95" : "bg-zinc-500"
+            } h-14 flex justify-center items-center gap-2 flex-row shadow-lg transition-all duration-200`}
           >
             <p className='text-white font-semibold text-lg tracking-wide'>Confirmar Reserva</p>
             <FaCheck size={16} className='text-white scale-90' />
@@ -849,7 +893,7 @@ const page = () => {
 
       {/* Modal de Confirmar Reserva en curso */}
       {confirmandoTurno && (
-        <div className='fixed z-[1000] left-0 top-0 h-screen w-screen backdrop-blur-md p-4 bg-white/20 flex justify-center items-center shadow-xl'>
+        <div className='fixed z-1000 left-0 top-0 h-screen w-screen backdrop-blur-md p-4 bg-white/20 flex justify-center items-center shadow-xl'>
           <div className='bg-white rounded-lg shadow-lg px-4 py-8 flex flex-col items-center gap-4 border border-zinc-200'>
             <FaCalendarCheck className='text-[#2346D3]' size={70} />
             <p className='text-center text-xl text-zinc-800 font-semibold'>¿Estas seguro de confirmar esta reserva?</p>
@@ -877,7 +921,7 @@ const page = () => {
 
       {/* Modal de Cancelar Reserva en curso */}
       {confirmandoCancelar && (
-        <div className='fixed z-[1000] left-0 top-0 h-screen w-screen backdrop-blur-md p-4 bg-white/20 flex justify-center items-center shadow-xl'>
+        <div className='fixed z-1000 left-0 top-0 h-screen w-screen backdrop-blur-md p-4 bg-white/20 flex justify-center items-center shadow-xl'>
           <div className='bg-white rounded-lg shadow-lg px-4 py-8 flex flex-col items-center gap-4 border border-zinc-200'>
             <FaRegCalendarTimes className='text-red-500' size={70} />
             <p className='text-center text-xl text-zinc-800 font-semibold'>
