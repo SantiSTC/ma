@@ -79,7 +79,7 @@ const MobileHome = () => {
           <div className='flex flex-col gap-3'>
             <div className='flex items-center gap-2'>
               <div className='p-2 rounded-lg bg-[#2346D3]/10'>
-                <TbMedicalCrossCircle size={24} className='text-[#2346D3]' />
+                <img src={"/icon.png"} className="h-8 aspect-square" />
               </div>
               <span className='text-lg font-bold text-zinc-800'>Medicos Argentina</span>
             </div>

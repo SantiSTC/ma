@@ -9,6 +9,7 @@ import { formatAppointment } from "@/app/utils/formatDate";
 import { FaArrowRight, FaCalendarAlt } from "react-icons/fa";
 import Link from "next/link";
 import { acortarDireccion } from "../../utils/acortarDireccion";
+import { useMemo } from "react";
 
 export default function TurnosSlider() {
   const [ref] = useKeenSlider({
@@ -17,8 +18,22 @@ export default function TurnosSlider() {
     slides: { perView: 1.2, spacing: 10 },
   });
 
+  // Filtrar turnos: solo los que no pasaron y están confirmados
+  const turnosFiltrados = useMemo(() => {
+    const now = new Date();
+
+    return mockAppointments.filter((appointment) => {
+      // Verificar que el estado sea "confirmado"
+      if (appointment.estado !== "confirmado") return false;
+
+      // Verificar que el turno no haya pasado
+      const turnoDateTime = new Date(`${appointment.fecha}T${appointment.hora}`);
+      return turnoDateTime > now;
+    });
+  }, []);
+
   // Si no hay turnos, mostrar mensaje
-  if (mockAppointments.length === 0) {
+  if (turnosFiltrados.length === 0) {
     return (
       <div className='px-6 py-1 w-full'>
         <div className='bg-white p-8 shadow-sm rounded-xl flex flex-col items-center justify-center gap-4 text-center'>
@@ -27,7 +42,7 @@ export default function TurnosSlider() {
           </div>
           <div className='flex flex-col gap-2'>
             <p className='text-lg font-semibold text-zinc-800'>No tienes turnos próximos</p>
-            <p className='text-sm text-zinc-500'>Agenda tu primera consulta médica</p>
+            <p className='text-sm text-zinc-500'>Agenda tu proxima consulta médica</p>
           </div>
         </div>
       </div>
@@ -36,7 +51,7 @@ export default function TurnosSlider() {
 
   return (
     <div ref={ref} className='keen-slider px-8 py-1'>
-      {mockAppointments.map((appointment) => (
+      {turnosFiltrados.map((appointment) => (
         <div key={appointment.id} className='keen-slider__slide bg-white p-4 shadow-sm rounded-md flex flex-col gap-2'>
           {/* Appointment Data */}
           <div className='h-full w-full flex flex-row gap-4'>

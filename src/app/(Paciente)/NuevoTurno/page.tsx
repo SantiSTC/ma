@@ -201,6 +201,8 @@ const page = () => {
       estado: "pendiente",
       modalidad: "presencial",
       resumen: resumenDeLaConsulta,
+      rechazadoPor: null,
+      motivoCancelacion: null,
     };
 
     setTurno(objTurno);

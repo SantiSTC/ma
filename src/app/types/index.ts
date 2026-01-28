@@ -1,6 +1,11 @@
 export interface Doctor {
   id: string;
   name: string;
+  about: string;
+  tuition: string;
+  phone: string;
+  email: string;
+  university: string;
   specialty: string;
   location: string;
   rating: number;
@@ -24,9 +29,11 @@ export interface Turno {
   paciente_dni: string;
   paciente_name: string;
   especialista: Doctor;
-  fecha: string;
-  hora: string;
-  estado: string;
-  modalidad: string;
+  fecha: string; // YYYY-MM-DD
+  hora: string;  // HH:mm
+  estado: "confirmado" | "pendiente" | "cancelado";
+  modalidad: "presencial" | "virtual";
   resumen: string;
+  rechazadoPor: "paciente" | "doctor" | null;
+  motivoCancelacion: string | null;
 }

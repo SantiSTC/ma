@@ -40,13 +40,18 @@ export default function SignUpForm() {
   return (
     <div className='w-full h-screen flex flex-col gap-4 px-6 py-6 bg-zinc-100 relative overflow-y-auto'>
       {/* Top Navbar Home */}
-      <div className='w-full flex flex-row justify-between items-center'>
+      <div className='relative w-full flex flex-row justify-between items-center py-1'>
         {/* Back Button */}
         <Link href={"/"} className='z-50 active:scale-90 active:text-zinc-500 text-zinc-800 transition-all'>
           <button className='hover:scale-95 transition-all'>
             <IoIosArrowBack size={28} className='text-zinc-800' />
           </button>
         </Link>
+
+        {/* Logo */}
+        <div className='absolute h-full w-full flex items-center justify-center'>
+          <img src={"/icon.png"} className='h-12 aspect-square' />
+        </div>
       </div>
 
       {/* Title & Subtitle */}

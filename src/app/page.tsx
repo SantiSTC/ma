@@ -6,6 +6,9 @@ import React from "react";
 export default function App() {
   return (
     <div className='h-screen w-screen bg-white flex flex-col justify-center items-center p-8'>
+      <div className="absolute top-0 left-0 w-full h-20 flex justify-center items-center">
+        <img src={"/icon.png"} className="h-12 aspect-square" />
+      </div>
       <img src='/welcome_app.jpg' alt='' className='w-[85%] bg-red-500 translate-y-8' />
       <h1 className='text-zinc-800 text-3xl text-center font-bold -mt-8 translate-y-8'>
         La nueva era de<br />la medicina Argentina está acá
@@ -15,12 +18,12 @@ export default function App() {
       </p>
       <div className='mt-auto w-full flex flex-col gap-4'>
         <Link href={"/registrarse"}>
-          <button className='h-14 w-full rounded-xl bg-[#2346D3] text-white font-bold text-lg flex justify-center items-center'>
+          <button className='h-14 w-full rounded-xl bg-[#2346D3] text-white font-bold text-lg flex justify-center items-center hover:scale-[0.97] transition-all duration-200'>
             Registrarse
           </button>
         </Link>
         <Link href={"/login"}>
-          <button className='h-14 w-full rounded-xl bg-[#2346D3]/10 text-[#2346D3] font-bold text-lg flex justify-center items-center'>
+          <button className='h-14 w-full rounded-xl bg-[#2346D3]/10 text-[#2346D3] font-bold text-lg flex justify-center items-center hover:scale-[0.97] transition-all duration-200'>
             Iniciar Sesión
           </button>
         </Link>

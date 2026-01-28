@@ -4,13 +4,15 @@ import { mockAppointments } from "@/app/(Paciente)/data/appointments";
 import { Turno } from "@/app/types";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { IoIosArrowBack, IoMdSettings } from "react-icons/io";
+import { IoIosArrowBack, IoMdChatbubbles, IoMdSettings } from "react-icons/io";
 import { actualDoctor } from "../data/actualDoctor";
 import { GoHomeFill } from "react-icons/go";
-import { FaBriefcaseMedical, FaCalendarAlt, FaClock } from "react-icons/fa";
+import { FaBriefcaseMedical, FaCalendarAlt, FaCheck, FaClock } from "react-icons/fa";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { obtenerPacientePorDNI } from "@/app/utils/obtenerPacientePorDNI";
 import { capitalizar } from "@/app/utils/capitalizar";
+import { MdDateRange } from "react-icons/md";
+import Navegacion from "../components/navegacion";
 
 const page = () => {
   const [turnosDelDoctor, setTurnosDelDoctor] = useState<Turno[]>([]);
@@ -43,6 +45,14 @@ const page = () => {
     const dateA = new Date(`${a.fecha}T${a.hora}`);
     const dateB = new Date(`${b.fecha}T${b.hora}`);
     return dateA.getTime() - dateB.getTime();
+  };
+
+  const confirmarTurno = (objTurno: Turno) => {
+    objTurno.estado = "confirmado";
+  };
+
+  const rechazarTurno = (objTurno: Turno) => {
+    objTurno.estado = "cancelado";
   };
 
   return (
@@ -91,8 +101,8 @@ const page = () => {
         estadoAVisualizar === "confirmado"
           ? "translate-x-0"
           : estadoAVisualizar === "pendiente"
-          ? "translate-x-full"
-          : "translate-x-[200%]"
+            ? "translate-x-full"
+            : "translate-x-[200%]"
       }`}
         />
 
@@ -180,52 +190,77 @@ const page = () => {
               <div className='flex flex-col gap-2'>
                 {/* Especialidad del turno */}
                 <div className='flex flex-row items-center gap-2'>
-                  <FaBriefcaseMedical size={12} className="text-zinc-500" />
-                  <p className="text-sm font-medium text-zinc-500 translate-y-px">{turno.especialista.specialty}</p>
+                  <FaBriefcaseMedical size={12} className='text-zinc-500' />
+                  <p className='text-sm font-medium text-zinc-500 translate-y-px'>{turno.especialista.specialty}</p>
                 </div>
                 {/* Resumen del turno */}
-                <div className="p-4 bg-zinc-100 rounded-xl">
-
+                <div className='p-2 bg-zinc-100 rounded-xl'>
+                  <p className='text-zinc-400 text-sm italic'>"{turno.resumen}"</p>
                 </div>
+              </div>
+              {/* Botones */}
+              <div className='w-full flex items-center'>
+                {/* Si el turno esta pendiente: */}
+                {turno.estado == "pendiente" && (
+                  <div className='w-full flex flex-row items-center gap-2'>
+                    {/* Boton de Rechazar turno */}
+                    <button
+                      onClick={() => rechazarTurno(turno)}
+                      className='w-full py-1.5 rounded-lg border-2 border-zinc-400 flex justify-center flex-row gap-2 items-center hover:scale-[0.97] active:scale-95 transition-all duration-200'
+                    >
+                      <p className='text-zinc-400 text-[15px] font-medium'>Rechazar</p>
+                    </button>
+                    {/* Boton de Aceptar turno */}
+                    <button
+                      onClick={() => confirmarTurno(turno)}
+                      className='w-full py-1.5 rounded-lg border-2 border-[#2346D3] bg-[#2346D3] flex justify-center flex-row gap-2 items-center hover:scale-[0.97] active:scale-95 transition-all duration-200'
+                    >
+                      <FaCheck size={14} className='text-white' />
+                      <p className='text-white text-[15px] font-medium'>Confirmar</p>
+                    </button>
+                  </div>
+                )}
+                {/* Si el turno esta confirmado: */}
+                {turno.estado == "confirmado" && (
+                  <div className='w-full flex flex-row items-center gap-2'>
+                    {/* Boton de chat con el paciente */}
+                    <button className='group w-full py-1 rounded-lg border-2 border-[#2346D3] flex justify-center flex-row gap-2 items-center hover:scale-[0.97] active:bg-[#2346D3] active:scale-95 transition-all duration-200'>
+                      <IoMdChatbubbles
+                        size={14}
+                        className='text-[#2346D3] group-active:text-white transition-all duration-200'
+                      />
+                      <p className='text-[#2346D3] text-base font-medium group-active:text-white transition-all duration-200'>
+                        Contactar
+                      </p>
+                    </button>
+                  </div>
+                )}
+                {/* Si el turno esta cancelado: */}
+                {turno.estado == "cancelado" && (
+                  <div className='w-full flex flex-col gap-1'>
+                    {/* Rechazado por */}
+                    <div>
+                      <p className='text-sm text-red-600'>
+                        Rechazado por{" "}
+                        <b className='text-sm font-normal text-zinc-500'>{capitalizar(turno.rechazadoPor as string)}</b>
+                      </p>
+                    </div>
+                    {/* Motivo de cancelación */}
+                    <div>
+                      <p className='text-sm text-red-600'>
+                        Motivo de cancelación:{" "}
+                        <b className='text-sm font-normal text-zinc-500 italic'>{turno.motivoCancelacion}</b>
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
       </div>
 
-      {/* --------------------- Borrar este comentario al terminar (Linea divisoria para no perderme) --------------------- */}
-
       {/* Navegacion */}
-      <div className='w-full h-20 fixed bottom-0 left-0 bg-white flex border-t border-zinc-200 px-4'>
-        {/* Inicio */}
-        <Link href='/homeDoctor' className='w-1/4 h-full'>
-          <div className='h-full flex flex-col items-center justify-center gap-1'>
-            <GoHomeFill size={20} className='text-zinc-500' />
-            <p className='text-xs text-zinc-500'>Inicio</p>
-          </div>
-        </Link>
-
-        {/* Turnos (activo) */}
-        <div className='w-1/4 h-full flex flex-col items-center justify-center gap-1'>
-          <FaCalendarAlt size={20} className='text-[#2346D3]' />
-          <p className='text-xs text-[#2346D3]'>Turnos</p>
-        </div>
-
-        {/* Pacientes */}
-        <Link href='/pacientesDoctor' className='w-1/4 h-full'>
-          <div className='h-full flex flex-col items-center justify-center gap-1'>
-            <BsFillPeopleFill size={20} className='text-zinc-500' />
-            <p className='text-xs text-zinc-500'>Pacientes</p>
-          </div>
-        </Link>
-
-        {/* Ajustes */}
-        <Link href='/ajustes' className='w-1/4 h-full'>
-          <div className='h-full flex flex-col items-center justify-center gap-1'>
-            <IoMdSettings size={20} className='text-zinc-500' />
-            <p className='text-xs text-zinc-500'>Ajustes</p>
-          </div>
-        </Link>
-      </div>
+      <Navegacion ubicacion='turnos' />
     </div>
   );
 };

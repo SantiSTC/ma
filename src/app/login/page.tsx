@@ -28,8 +28,8 @@ const page = () => {
       {/* Main section */}
       <div className='w-full flex flex-col items-center gap-6'>
         {/* Logo */}
-        <div className='p-3 rounded-xl bg-[#2346D3]/20'>
-          <TbMedicalCrossCircle size={40} className='text-[#2346D3]' />
+        <div className=''>
+          <img src={"/icon.png"} className="h-16 aspect-square" />
         </div>
         {/* Title & Subtitle */}
         <div className='flex flex-col items-center text-center gap-2'>
